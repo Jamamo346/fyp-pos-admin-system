@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POS Administration Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #000814, #001d3d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #ffffff;
+    }
+
+    .login-shell {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .login-card {
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 24px;
+      padding: 32px 30px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-title {
+      margin: 0 0 10px 0;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .login-subtitle {
+      margin: 0 0 24px 0;
+      text-align: center;
+      font-size: 15px;
+      color: #cbd5e1;
+    }
+
+    .login-system {
+      margin: 0 0 20px 0;
+      font-size: 15px;
+      color: #e2e8f0;
+    }
+
+    .login-error {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(127, 29, 29, 0.25);
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      color: #fecaca;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .login-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .login-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #475569;
+      border-radius: 12px;
+      background: #374151;
+      color: #ffffff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .login-group input::placeholder {
+      color: #cbd5e1;
+    }
+
+    .login-group input:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+      background: #455066;
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 78px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #c4b5fd;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .toggle-password:hover {
+      color: #ffffff;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 18px;
+      color: #cbd5e1;
+      font-size: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .login-card {
+        padding: 24px 20px;
+      }
+
+      .login-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-shell">
+    <div class="login-card">
+      <h1 class="login-title">POS Administration Login</h1>
+      <p class="login-subtitle">Restricted access for authorised staff</p>
+
+      <p class="login-system"><strong>System:</strong> POS Administration</p>
+
+      <div id="errorBox" class="login-error"></div>
+
+      <form action="login.php" method="POST" class="login-form" autocomplete="off">
+        <div class="login-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter your username"
+            required
+            autocomplete="username"
+          />
+        </div>
+
+        <div class="login-group">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+            />
+            <button type="button" id="togglePassword" class="toggle-password">Show</button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <p class="login-footer">POS Administration System</p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    const errorBox = document.getElementById("errorBox");
+
+    if (error) {
+      errorBox.textContent = error;
+      errorBox.style.display = "block";
+    }
+
+    const toggleBtn = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    toggleBtn.addEventListener("click", function () {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      toggleBtn.textContent = isPassword ? "Hide" : "Show";
+    });
+  </script>
+
+</body>
+</html>
