@@ -21,9 +21,8 @@ $loggedInRole     = $_SESSION["role"] ?? "Unknown";
 $canManageUsers   = ($loggedInRole === "Administrator");
 $canViewReports   = in_array($loggedInRole, ["Administrator", "Manager"], true);
 
-/* ===============================
-   CREATE SUPPLIERS TABLE IF NOT EXISTS
-================================*/
+
+  /* CREATE SUPPLIERS TABLE IF NOT EXISTS */
 $mysqli->query("
     CREATE TABLE IF NOT EXISTS suppliers (
         supplier_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,33 +38,12 @@ $mysqli->query("
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ");
 
-/* ===============================
-   HANDLE POST ACTIONS
-================================*/
-$successMsg = "";
-$errorMsg   = "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
+   /* Suppliers are permanent records*/
 
-    if ($_POST["action"] === "delete_supplier" && $canManageUsers) {
-        $delId = (int)($_POST["supplier_id"] ?? 0);
 
-        if ($delId > 0) {
-            $stmt = $mysqli->prepare("DELETE FROM suppliers WHERE supplier_id = ?");
+   /*FETCH SUPPLIERS + LINKED PRODUCTS*/
 
-            if ($stmt) {
-                $stmt->bind_param("i", $delId);
-                $stmt->execute();
-                $successMsg = "Supplier removed.";
-                $stmt->close();
-            }
-        }
-    }
-}
-
-/* ===============================
-   FETCH SUPPLIERS + LINKED PRODUCTS
-================================*/
 $suppliers = [];
 
 $result = $mysqli->query("
@@ -179,15 +157,6 @@ foreach ($suppliers as $s) {
             </div>
         </div>
 
-        <!-- Success / Error Messages -->
-        <?php if ($successMsg): ?>
-            <div class="supplier-alert supplier-alert-success"><?php echo $successMsg; ?></div>
-        <?php endif; ?>
-
-        <?php if ($errorMsg): ?>
-            <div class="supplier-alert supplier-alert-error"><?php echo $errorMsg; ?></div>
-        <?php endif; ?>
-
         <!-- Suppliers Table -->
         <div class="table-card">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom: 16px;">
@@ -210,9 +179,6 @@ foreach ($suppliers as $s) {
                             <th>Balance</th>
                             <th>Purchases</th>
                             <th>Last Purchase</th>
-                            <?php if ($canManageUsers): ?>
-                                <th>Actions</th>
-                            <?php endif; ?>
                         </tr>
                     </thead>
 
@@ -266,16 +232,6 @@ foreach ($suppliers as $s) {
                             <td><?php echo number_format((int)$s["total_purchases"]); ?></td>
 
                             <td><?php echo $lastPurchase; ?></td>
-
-                            <?php if ($canManageUsers): ?>
-                            <td>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Remove this supplier?');">
-                                    <input type="hidden" name="action" value="delete_supplier">
-                                    <input type="hidden" name="supplier_id" value="<?php echo (int)$s["supplier_id"]; ?>">
-                                    <button type="submit" class="supplier-del-btn" title="Delete">✕</button>
-                                </form>
-                            </td>
-                            <?php endif; ?>
                         </tr>
 
                         <?php endforeach; ?>
