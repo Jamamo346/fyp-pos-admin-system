@@ -9,7 +9,7 @@ Evaluating Privacy Protections in AI-Powered Cloud Services within the Retail In
 - Inventory management
 - AI Data Assistant (Python backend)
 
-tools
+ ## Tools
 - PHP
 - MySQL
 - Python
